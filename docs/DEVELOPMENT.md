@@ -11,8 +11,9 @@ publishing checklist for CodePrism.
 ## 1. Prerequisites
 
 - Python **3.10+** (`python` / `python3` on PATH)
-- Node.js **20+** and npm — `npm run compile` / tests also work on 18, but
-  `@vscode/vsce` 3.2+ (used by `npm run package`) declares `node >= 20`
+- Node.js **22+** and npm — `@vscode/test-electron` 3.x (the real VS Code
+  integration suite) declares `node >= 22`, and `@vscode/vsce` 3.2+ (used by
+  `npm run package`) needs >= 20; `npm run compile` alone still works on 18
 - VS Code 1.85+ (for extension development and integration tests)
 - Git
 - `pip install -e ./core` builds with PEP 639 metadata (`license =
