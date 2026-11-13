@@ -1,0 +1,179 @@
+{
+  "name": "codeprism",
+  "displayName": "CodePrism",
+  "description": "Pack your codebase into a single AI-ready Markdown file: gitignore-aware, binary-asset friendly, deterministic. 100% local packing; the extension itself makes no network calls.",
+  "version": "0.1.0",
+  "publisher": "codeprism",
+  "license": "GPL-3.0-only",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#16161e",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "llm",
+    "prompt",
+    "markdown",
+    "context",
+    "codebase",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bukall/CodePrism.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bukall/CodePrism/issues"
+  },
+  "homepage": "https://github.com/bukall/CodePrism#readme",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeprism.packWorkspace",
+        "title": "CodePrism: Pack Entire Workspace to Markdown"
+      },
+      {
+        "command": "codeprism.packSelected",
+        "title": "CodePrism: Pack Selected to Markdown"
+      },
+      {
+        "command": "codeprism.copySelected",
+        "title": "CodePrism: Copy Selected as Markdown to Clipboard"
+      },
+      {
+        "command": "codeprism.refreshContext",
+        "title": "CodePrism: Refresh Context Document",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codeprism.showOutput",
+        "title": "CodePrism: Show Output Channel"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "codeprism.packSelected",
+          "group": "7_modification@100"
+        },
+        {
+          "command": "codeprism.copySelected",
+          "group": "7_modification@101"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "codeprism.refreshContext",
+          "when": "codeprism.isContextDocument",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "codeprism.refreshContext",
+          "when": "codeprism.isContextDocument || codeprism.hasLastPack"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CodePrism",
+      "properties": {
+        "codeprism.outputFileName": {
+          "type": "string",
+          "default": "codeprism-context.md",
+          "scope": "resource",
+          "markdownDescription": "Name of the generated Markdown file. It is written to the workspace folder root (or the common parent directory of the selection when no folder is open)."
+        },
+        "codeprism.copyToClipboardAfterGenerate": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Also copy the generated Markdown to the system clipboard after writing the file."
+        },
+        "codeprism.additionalIgnorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "scope": "resource",
+          "markdownDescription": "Extra gitignore-style patterns to exclude, e.g. `[\"*.log\", \"docs/**\"]`. Applied in addition to `.gitignore` rules and built-in defaults; these explicit patterns take precedence over `.gitignore` negations (`!pattern`)."
+        },
+        "codeprism.ignoreLockFiles": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Ignore dependency lock files (package-lock.json, pnpm-lock.yaml, yarn.lock, Cargo.lock, poetry.lock, go.sum, ...)."
+        },
+        "codeprism.truncateContentPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "scope": "resource",
+          "markdownDescription": "Extra gitignore-style patterns whose content is preview-truncated (in addition to the built-in `LICENSE`/`COPYING` list). Matched files stay in the file tree; only the first `#codeprism.truncatedPreviewChars#` characters are rendered, followed by a truncation notice."
+        },
+        "codeprism.truncatedPreviewChars": {
+          "type": "integer",
+          "default": 200,
+          "minimum": 0,
+          "scope": "resource",
+          "description": "Characters kept for truncated files (LICENSE-like). 0 omits their content entirely, keeping only the truncation notice."
+        },
+        "codeprism.maxFileBytes": {
+          "type": "integer",
+          "default": 1048576,
+          "minimum": 0,
+          "scope": "resource",
+          "description": "Text files larger than this (bytes) are never read in full; only a leading preview of truncatedPreviewChars characters is included. 0 disables the limit."
+        },
+        "codeprism.pythonPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "Path to a Python 3.10+ interpreter: a plain executable path, without arguments or shell syntax. Leave empty to auto-detect: the active environment of the Microsoft Python extension (if installed), then `python3` / `python` on PATH."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run sync:core && npm run vendor && npm run build",
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "check": "tsc --noEmit",
+    "compile": "npm run check && node esbuild.js",
+    "sync:core": "node scripts/sync-core.mjs",
+    "vendor": "node ../scripts/run-vendor.mjs",
+    "icon": "node scripts/generate-icon.mjs",
+    "test:integration": "npm run sync:core && npm run vendor && npm run check && npm run build && tsc -p tsconfig.test.json && node out-test/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.4.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,56 @@
+[build-system]
+# setuptools>=77 implements PEP 639: the SPDX `license` string and
+# `license-files`. Older versions interpret a string `license` as a file path
+# and fail, so the floor is part of the contract, not an arbitrary bump.
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codeprism-core"
+dynamic = ["version"]
+description = "Deterministic codebase-to-Markdown context packer. No AST, no secrets scanning, no network."
+readme = "README.md"
+requires-python = ">=3.10"
+# PEP 639: a plain SPDX expression, and no `License ::` classifier (that
+# classifier family is deprecated in favour of the expression above).
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+authors = [{ name = "CodePrism contributors" }]
+keywords = ["llm", "prompt", "markdown", "context", "codebase", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+# Compatible ranges for library consumers (pip install codeprism-core / API
+# reuse). Exact vsix reproducibility is owned by scripts/prepare-vendor.py;
+# CI asserts those pins satisfy these ranges (scripts/check-vendor-pins.py).
+dependencies = [
+    "pathspec>=1.0,<2",
+    "binaryornot>=0.6.0,<0.7",
+    "chardet>=5.2,<6",
+    "click>=8.0,<9",
+    "pyperclip>=1.8,<2",
+]
+
+[project.optional-dependencies]
+# Development-only: scripts/check-vendor-pins.py (also needs Python 3.11+).
+dev = ["packaging>=23.0"]
+
+[project.urls]
+Homepage = "https://github.com/bukall/CodePrism"
+Repository = "https://github.com/bukall/CodePrism"
+Issues = "https://github.com/bukall/CodePrism/issues"
+
+[project.scripts]
+codeprism = "codeprism.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "codeprism.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["codeprism*"]

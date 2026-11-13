@@ -218,3 +218,25 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node / VS Code extension
+node_modules/
+*.vsix
+.vscode-test/
+out-test/
+.venv-bare/
+
+# Generated extension runtime (recreated by sync-core.mjs / prepare-vendor.py)
+vscode-extension/bundled/codeprism/
+vscode-extension/bundled/vendor/
+vscode-extension/bundled/.vendor-build-*/
+vscode-extension/bundled/.vendor-old-*/
+vscode-extension/bundled/.vendor-req-*
+vscode-extension/bundled/.codeprism-sync-*/
+vscode-extension/bundled/.codeprism-old-*/
+
+# Generated context documents (CodePrism output)
+codeprism-context.md
+
+# Transient case-sensitivity probe created in the pack root on macOS
+.codeprism-case-*/
